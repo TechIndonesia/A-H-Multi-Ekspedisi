@@ -1,0 +1,6 @@
+{
+  "name": "Portal Ekspedisi Indonesia",
+  "description": "Portal pengiriman paket Indonesia untuk cek ongkir, cek resi, dan formulir pengiriman WhatsApp ke admin untuk berbagai vendor ekspedisi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
