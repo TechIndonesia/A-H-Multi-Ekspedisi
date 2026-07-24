@@ -44,6 +44,38 @@ interface ShipmentOrder {
   createdAt: string;
 }
 
+// ==================== KOMPONEN IKLAN ADSENSE ====================
+interface AdBannerProps {
+  slot?: string; // Opsional: masukkan ID Slot jika menggunakan Iklan Unit (Display Ads)
+}
+
+function AdBanner({ slot }: AdBannerProps) {
+  useEffect(() => {
+    try {
+      // Memicu AdSense untuk memuat iklan di slot ini
+      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+    } catch (e) {
+      console.warn("AdSense pending/loading...");
+    }
+  }, []);
+
+  return (
+    <div className="w-full my-6 text-center overflow-hidden bg-white rounded-3xl p-4 border border-slate-200/60 shadow-xs">
+      <span className="text-[9px] text-slate-400 block mb-2 uppercase tracking-widest font-semibold">Sponsor</span>
+      {/* Google AdSense Tag */}
+      <ins
+        className="adsbygoogle"
+        style={{ display: "block", minHeight: "90px" }}
+        data-ad-client="ca-pub-8253993926061966"
+        data-ad-slot={slot || "6281234567"} // Ganti dengan ID slot iklan dari AdSense jika ada
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    </div>
+  );
+}
+// ================================================================
+
 export default function App() {
   // Navigation Tabs
   const [activeTab, setActiveTab] = useState<"formulir" | "ongkir" | "resi" | "riwayat">("formulir");
@@ -80,6 +112,23 @@ export default function App() {
 
   // Ref for scrolling
   const formRef = useRef<HTMLDivElement>(null);
+
+  // ==================== AUTO INJECT ADSENSE SCRIPT ====================
+  useEffect(() => {
+    // Memastikan script AdSense terpasang di Head secara dinamis
+    const scriptId = "google-adsense-script";
+    let script = document.getElementById(scriptId) as HTMLScriptElement;
+
+    if (!script) {
+      script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8253993926061966";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      document.head.appendChild(script);
+    }
+  }, []);
+  // ===================================================================
 
   // Load persistence from localStorage
   useEffect(() => {
@@ -250,8 +299,6 @@ _Dikirim via Portal Ekspedisi Indonesia_`;
       showTempNotification("info", `Membuka portal pelacakan resmi ${vendor.name}...`);
     }
 
-    // In most cases, opening the official tracking portal is necessary. 
-    // We open the official tracking page where user can paste/enter the code easily.
     window.open(vendor.trackingUrl, "_blank");
   };
 
@@ -391,6 +438,13 @@ _Dikirim via Portal Ekspedisi Indonesia_`;
 
       {/* Main Work Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* ==================== PENEMPATAN IKLAN UTAMA (DI ATAS TAB NAVIGATION) ==================== */}
+        <div className="max-w-2xl mx-auto">
+          <AdBanner />
+        </div>
+        {/* ========================================================================================= */}
+
         {/* Core Task Selection Tabs */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-8 bg-slate-200/60 p-1.5 rounded-2xl max-w-2xl mx-auto border border-slate-200">
           <button
@@ -563,7 +617,7 @@ _Dikirim via Portal Ekspedisi Indonesia_`;
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Active Work Panel (Form WA, Rates, Tracking, etc.) */}
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-8 font-sans">
             <AnimatePresence mode="wait">
               
               {/* Tab 1: Formulir Pengiriman WhatsApp */}
@@ -1020,7 +1074,6 @@ _Dikirim via Portal Ekspedisi Indonesia_`;
 
                             <button
                               onClick={() => {
-                                // Re-create and send the message if they click "Kirim Ulang WA"
                                 setSelectedVendor(vendor);
                                 setSenderName(order.senderName);
                                 setSenderPhone(order.senderPhone);
@@ -1168,6 +1221,10 @@ _Dikirim via Portal Ekspedisi Indonesia_`;
                 Situs portal pengiriman ini murni bersifat agregator informasi dan jembatan data (gateway) via WhatsApp ke Admin Ekspedisi. Kami tidak memungut biaya apa pun dan tidak menyimpan data sensitif pribadi Anda di server luar, seluruh riwayat disimpan secara lokal di browser Anda.
               </div>
             </div>
+
+            {/* ==================== PENEMPATAN IKLAN KEDUA (SIDEBAR BAWAH) ==================== */}
+            <AdBanner />
+            {/* ================================================================================= */}
 
           </div>
 
